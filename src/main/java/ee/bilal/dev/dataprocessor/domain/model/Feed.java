@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
+import java.time.Instant;
 
 /**
  * Created by bilal90 on 8/19/2018.
@@ -36,5 +37,5 @@ public class Feed extends AuditingEntity {
 
     @NonNull
     @Column(name = "date", nullable = false)
-    private Date date;
+    private transient Instant date;
 }

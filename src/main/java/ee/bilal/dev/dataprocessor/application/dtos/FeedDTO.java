@@ -33,13 +33,13 @@ public class FeedDTO implements DTO<Feed> {
     private String contents;
 
     @NonNull
-    private Date date;
+    private Instant date;
 
     private Instant createdDate;
 
     private Instant lastModifiedDate;
 
-    public static FeedDTO of(String link, String title, Date date){
+    public static FeedDTO of(String link, String title, Instant date){
         FeedDTO feed = new FeedDTO();
         feed.setLink(link);
         feed.setTitle(title);
