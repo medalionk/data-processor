@@ -9,7 +9,6 @@ import java.util.Optional;
 /**
  * Created by bilal90 on 8/19/2018.
  */
-@Service
 public interface GenericService<T extends DTO> {
     /**
      * Create entity

@@ -7,7 +7,6 @@ import ee.bilal.dev.dataprocessor.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 /**
  * Created by bilal90 on 8/19/2018.
  */
-@Service
 public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>> implements GenericService<T> {
     protected final Logger logger;
     protected final JpaRepository<U, String> repository;
