@@ -7,6 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.TimeZone;
 
 /**
@@ -19,6 +21,12 @@ public class ApplicationConfig {
     @Getter
     @Value("${rss-feed-url}")
     private String rssFeedUrl;
+
+    @Getter
+    @Min(1)
+    @Max(Long.MAX_VALUE)
+    @Value("${feed-delay}")
+    private long feedDelay;
 
     @PostConstruct
     void started() {

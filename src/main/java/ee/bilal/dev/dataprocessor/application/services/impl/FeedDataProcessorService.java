@@ -4,6 +4,7 @@ import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.mappers.FeedMapper;
 import ee.bilal.dev.dataprocessor.application.services.BaseGenericService;
 import ee.bilal.dev.dataprocessor.application.services.DataProcessorService;
+import ee.bilal.dev.dataprocessor.configurations.ApplicationConfig;
 import ee.bilal.dev.dataprocessor.domain.model.Feed;
 import ee.bilal.dev.dataprocessor.domain.repository.FeedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,35 +24,40 @@ public class FeedDataProcessorService extends BaseGenericService<Feed, FeedDTO>
 
     private final RssFeedProducerService producer;
     private final RssFeedProcessorService processor;
-    private final FeedRepository feedRepository;
+    private final ApplicationConfig config;
 
     @Autowired
     public FeedDataProcessorService(
             FeedRepository repository, FeedMapper mapper, RssFeedProducerService producer,
-            RssFeedProcessorService processor) {
+            RssFeedProcessorService processor, ApplicationConfig config) {
         super(FeedDataProcessorService.class, repository, mapper);
 
         this.producer = producer;
         this.processor = processor;
-        this.feedRepository = repository;
+        this.config = config;
     }
 
     @PostConstruct
     public void init(){
         final Function<List<FeedDTO>, List<FeedDTO>> success = feeds -> {
             List<FeedDTO> processed = processor.process(feeds);
+            logger.info("Processed feeds '{}'", processed);
             return processed;
         };
 
         final Function<List<FeedDTO>, List<FeedDTO>> saveFeeds = feeds -> {
             List<FeedDTO> savedFeeds = saveAll(feeds);
+            logger.info("Saved feeds '{}'", savedFeeds);
             return savedFeeds;
         };
 
         final Consumer<Exception> error = x -> {
-            logger.info(x.getMessage());
+            logger.error(x.getMessage());
         };
-        producer.produce(success.andThen(saveFeeds), error);
-        //System.out.println(feeds);
+
+        final String feedUrl = config.getRssFeedUrl();
+        final long delay = config.getFeedDelay();
+
+        producer.produce(feedUrl, delay, success.andThen(saveFeeds), error);
     }
 }

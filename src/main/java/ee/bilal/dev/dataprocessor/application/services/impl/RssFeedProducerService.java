@@ -8,7 +8,6 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.services.ProducerService;
-import ee.bilal.dev.dataprocessor.configurations.ApplicationConfig;
 import ee.bilal.dev.dataprocessor.util.UrlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,9 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -29,33 +31,45 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class RssFeedProducerService implements ProducerService<List<FeedDTO>, List<FeedDTO>> {
-    private final ApplicationConfig config;
 
     @Autowired
-    public RssFeedProducerService(ApplicationConfig config) {
-        this.config = config;
+    public RssFeedProducerService() {
     }
 
     @Override
-    public void produce(final Function<List<FeedDTO>, List<FeedDTO>> success,
+    public void produce(final String feedUrl, final long delay, final Function<List<FeedDTO>,List<FeedDTO>> success,
                         final Consumer<Exception> error) {
-        final String url = config.getRssFeedUrl();
 
-        if(!UrlUtil.isValidUrl(url)){
-            throw new IllegalArgumentException(String.format("URL '%s' is not valid!!!", url));
+        if(!UrlUtil.isValidUrl(feedUrl)){
+            throw new IllegalArgumentException(String.format("URL '%s' is not valid!!!", feedUrl));
         }
 
-        try {
-            final List<FeedDTO> feeds = getRssFeed(url);
-            success.apply(feeds);
+        if(delay <= 0){
+            throw new IllegalArgumentException("Delay cannot be 0 or negative value");
         }
-        catch (Exception ex) {
-            log.error("Error getting feeds '{}'", ex);
-            error.accept(ex);
-        }
+
+        final Runnable task = fetchRssFeedTask(feedUrl, success, error);
+        final long initialDelay = 1;
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleWithFixedDelay(task, initialDelay, delay, TimeUnit.SECONDS);
     }
 
-    private List<FeedDTO> getRssFeed(final String url) throws IOException, FeedException {
+    private Runnable fetchRssFeedTask(final String feedUrl, final Function<List<FeedDTO>,List<FeedDTO>> success,
+                                      final Consumer<Exception> error){
+        return () -> {
+            try {
+                final List<FeedDTO> feeds = fetchRssFeed(feedUrl);
+                success.apply(feeds);
+            }
+            catch (Exception ex) {
+                log.error("Error getting feeds '{}'", ex);
+                error.accept(ex);
+            }
+        };
+    }
+
+    private List<FeedDTO> fetchRssFeed(final String url) throws IOException, FeedException {
         try {
             final List<FeedDTO> feeds = new ArrayList<>();
 
