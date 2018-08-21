@@ -1,6 +1,5 @@
 package ee.bilal.dev.dataprocessor.application.dtos;
 
-import ee.bilal.dev.dataprocessor.application.mappers.FeedMapper;
 import ee.bilal.dev.dataprocessor.application.mappers.FeedMappers;
 import ee.bilal.dev.dataprocessor.domain.model.Feed;
 import lombok.Data;
@@ -9,8 +8,7 @@ import lombok.NonNull;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Created by bilal90 on 8/19/2018.
@@ -33,17 +31,17 @@ public class FeedDTO implements DTO<Feed> {
     private String contents;
 
     @NonNull
-    private Instant date;
+    private LocalDateTime dateTime;
 
-    private Instant createdDate;
+    private LocalDateTime createdDateTime;
 
-    private Instant lastModifiedDate;
+    private LocalDateTime lastModifiedDateTime;
 
-    public static FeedDTO of(String link, String title, Instant date){
+    public static FeedDTO of(String link, String title, LocalDateTime dateTime){
         FeedDTO feed = new FeedDTO();
         feed.setLink(link);
         feed.setTitle(title);
-        feed.setDate(date);
+        feed.setDateTime(dateTime);
 
         return feed;
     }

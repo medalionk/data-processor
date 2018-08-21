@@ -8,6 +8,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.services.ProducerService;
+import ee.bilal.dev.dataprocessor.util.DateUtil;
 import ee.bilal.dev.dataprocessor.util.UrlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -84,7 +86,7 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
             for (SyndEntry entry : entries) {
                 final String link = entry.getLink();
                 final String title = entry.getTitle();
-                final Instant date = entry.getPublishedDate().toInstant();
+                final LocalDateTime date = DateUtil.toLocalDateTime(entry.getPublishedDate());
 
                 final FeedDTO feed = FeedDTO.of(link, title, date);
 

@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface FeedMapper extends BaseMapper<FeedDTO, Feed> {
     @Mappings({
-            @Mapping(target = "createdDate", ignore = true),
-            @Mapping(target = "lastModifiedDate", ignore = true),
+            @Mapping(target = "createdDateTime", ignore = true),
+            @Mapping(target = "lastModifiedDateTime", ignore = true),
     })
     @Named("toEntity")
     Feed toEntity(FeedDTO dto);

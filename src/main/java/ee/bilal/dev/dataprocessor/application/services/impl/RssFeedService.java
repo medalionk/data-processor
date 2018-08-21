@@ -3,7 +3,7 @@ package ee.bilal.dev.dataprocessor.application.services.impl;
 import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.mappers.FeedMapper;
 import ee.bilal.dev.dataprocessor.application.services.BaseGenericService;
-import ee.bilal.dev.dataprocessor.application.services.DataProcessorService;
+import ee.bilal.dev.dataprocessor.application.services.FeedService;
 import ee.bilal.dev.dataprocessor.configurations.ApplicationConfig;
 import ee.bilal.dev.dataprocessor.domain.model.Feed;
 import ee.bilal.dev.dataprocessor.domain.repository.FeedRepository;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,18 +20,17 @@ import java.util.function.Function;
  * Created by bilal90 on 8/19/2018.
  */
 @Service
-public class FeedDataProcessorService extends BaseGenericService<Feed, FeedDTO>
-        implements DataProcessorService<FeedDTO> {
+public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements FeedService {
 
     private final RssFeedProducerService producer;
     private final RssFeedProcessorService processor;
     private final ApplicationConfig config;
 
     @Autowired
-    public FeedDataProcessorService(
+    public RssFeedService(
             FeedRepository repository, FeedMapper mapper, RssFeedProducerService producer,
             RssFeedProcessorService processor, ApplicationConfig config) {
-        super(FeedDataProcessorService.class, repository, mapper);
+        super(RssFeedService.class, repository, mapper);
 
         this.producer = producer;
         this.processor = processor;
@@ -59,5 +59,10 @@ public class FeedDataProcessorService extends BaseGenericService<Feed, FeedDTO>
         final long delay = config.getFeedDelay();
 
         producer.produce(feedUrl, delay, success.andThen(saveFeeds), error);
+    }
+
+    @Override
+    public List<FeedDTO> getFeeds() {
+        return new ArrayList<>();
     }
 }

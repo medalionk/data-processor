@@ -6,8 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import java.sql.Date;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Created by bilal90 on 8/19/2018.
@@ -36,6 +35,6 @@ public class Feed extends AuditingEntity {
     private String contents;
 
     @NonNull
-    @Column(name = "date", nullable = false)
-    private transient Instant date;
+    @Column(name = "date_time", nullable = false)
+    private LocalDateTime dateTime;
 }
