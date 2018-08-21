@@ -2,6 +2,7 @@ package ee.bilal.dev.dataprocessor.domain.repository;
 
 import ee.bilal.dev.dataprocessor.domain.model.Feed;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,5 +12,6 @@ import java.util.List;
  */
 @Repository
 public interface FeedRepository extends JpaRepository<Feed, String> {
-    //List<Feed> b
+    @Query(nativeQuery = true, value = "select * from Feed s ORDER BY id desc LIMIT 10")
+    List<Feed> findLast10Feeds();
 }

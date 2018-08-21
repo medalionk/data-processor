@@ -2,6 +2,7 @@ package ee.bilal.dev.dataprocessor.application.services.impl;
 
 import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.mappers.FeedMapper;
+import ee.bilal.dev.dataprocessor.application.mappers.FeedMappers;
 import ee.bilal.dev.dataprocessor.application.services.BaseGenericService;
 import ee.bilal.dev.dataprocessor.application.services.FeedService;
 import ee.bilal.dev.dataprocessor.configurations.ApplicationConfig;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,6 +25,7 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
     private final RssFeedProducerService producer;
     private final RssFeedProcessorService processor;
     private final ApplicationConfig config;
+    private final FeedRepository feedRepository;
 
     @Autowired
     public RssFeedService(
@@ -35,34 +36,44 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
         this.producer = producer;
         this.processor = processor;
         this.config = config;
+        this.feedRepository = repository;
     }
 
     @PostConstruct
     public void init(){
-        final Function<List<FeedDTO>, List<FeedDTO>> success = feeds -> {
-            List<FeedDTO> processed = processor.process(feeds);
-            logger.info("Processed feeds '{}'", processed);
-            return processed;
-        };
-
-        final Function<List<FeedDTO>, List<FeedDTO>> saveFeeds = feeds -> {
-            List<FeedDTO> savedFeeds = saveAll(feeds);
-            logger.info("Saved feeds '{}'", savedFeeds);
-            return savedFeeds;
-        };
-
-        final Consumer<Exception> error = x -> {
-            logger.error(x.getMessage());
-        };
-
         final String feedUrl = config.getRssFeedUrl();
         final long delay = config.getFeedDelay();
 
-        producer.produce(feedUrl, delay, success.andThen(saveFeeds), error);
+        producer.produce(feedUrl, delay, onSuccess().andThen(saveFeeds()), onError());
     }
 
     @Override
     public List<FeedDTO> getFeeds() {
-        return new ArrayList<>();
+        List<Feed> feeds = feedRepository.findLast10Feeds();
+        return FeedMappers.FEED_MAPPER.toDTOs(feeds);
+    }
+
+    private Function<List<FeedDTO>, List<FeedDTO>> onSuccess(){
+        return feeds -> {
+            List<FeedDTO> processed = processor.process(feeds);
+            logger.info("Processed feeds '{}'", processed);
+
+            return processed;
+        };
+    }
+
+    private Function<List<FeedDTO>, List<FeedDTO>> saveFeeds(){
+        return feeds -> {
+            List<FeedDTO> savedFeeds = saveAll(feeds);
+            logger.info("Saved feeds '{}'", savedFeeds);
+
+            return savedFeeds;
+        };
+    }
+
+    private Consumer<Exception> onError(){
+        return x -> {
+            logger.error(x.getMessage());
+        };
     }
 }

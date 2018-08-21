@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor(force = true)
 public class FeedDTO implements DTO<Feed> {
-    private String id;
+    private Long id;
 
     @NotEmpty
     @NotNull

@@ -1,12 +1,11 @@
 package ee.bilal.dev.dataprocessor.domain.model;
 
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 /**
  * Created by bilal90 on 8/19/2018.
@@ -17,10 +16,10 @@ import javax.persistence.MappedSuperclass;
 public abstract class IdentifiableEntity extends BaseEntity{
     @Getter
     @Setter
-    @Id @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
-    @Column(columnDefinition = "CHAR(32)", name = "id", updatable = false, nullable = false)
-    protected String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
     @Override
     public int hashCode() {
