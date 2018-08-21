@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditingEntity extends IdentifiableEntity {
+
     @CreationTimestamp
     @Column(name = "created_date_time", nullable = false)
     private LocalDateTime createdDateTime;
@@ -26,4 +27,5 @@ public abstract class AuditingEntity extends IdentifiableEntity {
     @UpdateTimestamp
     @Column(name = "last_modified_date_time")
     private LocalDateTime lastModifiedDateTime;
+
 }

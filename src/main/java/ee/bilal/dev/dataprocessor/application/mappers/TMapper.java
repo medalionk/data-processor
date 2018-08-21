@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by bilal90 on 8/19/2018.
  */
-public interface BaseMapper<T, U extends BaseEntity> {
+public interface TMapper<T, U extends BaseEntity> {
     /**
      * Convert DTO to Entity
      * @param dto to convert

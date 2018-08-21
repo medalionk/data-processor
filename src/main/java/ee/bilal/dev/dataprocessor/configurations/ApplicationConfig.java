@@ -18,6 +18,7 @@ import java.util.TimeZone;
 @Configuration
 @PropertySource(value = "classpath:application.properties", encoding="UTF-8")
 public class ApplicationConfig {
+
     @Getter
     @Value("${rss-feed-url}")
     private String rssFeedUrl;
@@ -28,8 +29,12 @@ public class ApplicationConfig {
     @Value("${feed-delay}")
     private long feedDelay;
 
+    /**
+     * Common initialization settings
+     */
     @PostConstruct
-    void started() {
+    void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+3"));;
     }
+
 }

@@ -13,6 +13,11 @@ import java.util.Arrays;
 @Component
 @Slf4j
 public class LogBeforeAspect {
+
+    /**
+     * Log function name and passed parameters at start of function
+     * @param joinPoint function join point
+     */
     @Before("@annotation(ee.bilal.dev.dataprocessor.aspects.annotations.LogBefore))")
     public void before(final JoinPoint joinPoint){
         final String functionName = joinPoint.toLongString();
@@ -20,4 +25,5 @@ public class LogBeforeAspect {
 
         log.info("Call function '{}' with arguments '{}'", functionName, functionArgs);
     }
+
 }

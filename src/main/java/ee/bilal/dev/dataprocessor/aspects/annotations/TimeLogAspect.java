@@ -11,6 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class TimeLogAspect {
+
+    /**
+     * Log time taken to return from function
+     * @param proceedingJoinPoint
+     * @return function result
+     * @throws Throwable
+     */
     @Around("@annotation(ee.bilal.dev.dataprocessor.aspects.annotations.Timed) && execution(public * *(..))")
     public Object time(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long start = System.currentTimeMillis();
@@ -32,4 +39,5 @@ public class TimeLogAspect {
 
         return value;
     }
+
 }

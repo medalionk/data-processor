@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by bilal90 on 8/19/2018.
  */
 public class IdFactory {
+
     private static final AtomicLong sequence = new AtomicLong(System.currentTimeMillis());
 
     private IdFactory() {
@@ -28,4 +29,5 @@ public class IdFactory {
     public static String uniqueSequence() {
         return String.valueOf(sequence.incrementAndGet());
     }
+
 }

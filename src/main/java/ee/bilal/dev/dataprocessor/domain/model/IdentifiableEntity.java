@@ -14,6 +14,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @MappedSuperclass
 public abstract class IdentifiableEntity extends BaseEntity{
+
     @Getter
     @Setter
     @Id
@@ -30,13 +31,9 @@ public abstract class IdentifiableEntity extends BaseEntity{
     public boolean equals(Object obj) {
         if (this == obj){
             return true;
-        }
-
-        else if (obj == null){
+        } else if (obj == null){
             return false;
-        }
-
-        else if (!(obj instanceof IdentifiableEntity)) {
+        } else if (!(obj instanceof IdentifiableEntity)) {
             return false;
         }
 
@@ -44,4 +41,5 @@ public abstract class IdentifiableEntity extends BaseEntity{
 
         return getId().equals(other.getId());
     }
+
 }

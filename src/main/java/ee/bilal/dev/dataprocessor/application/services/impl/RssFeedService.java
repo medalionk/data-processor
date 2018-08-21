@@ -8,6 +8,7 @@ import ee.bilal.dev.dataprocessor.application.services.FeedService;
 import ee.bilal.dev.dataprocessor.configurations.ApplicationConfig;
 import ee.bilal.dev.dataprocessor.domain.model.Feed;
 import ee.bilal.dev.dataprocessor.domain.repository.FeedRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.function.Function;
  * Created by bilal90 on 8/19/2018.
  */
 @Service
+@Slf4j
 public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements FeedService {
 
     private final RssFeedProducerService producer;
@@ -31,7 +33,7 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
     public RssFeedService(
             FeedRepository repository, FeedMapper mapper, RssFeedProducerService producer,
             RssFeedProcessorService processor, ApplicationConfig config) {
-        super(RssFeedService.class, repository, mapper);
+        super(repository, mapper);
 
         this.producer = producer;
         this.processor = processor;
@@ -39,6 +41,9 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
         this.feedRepository = repository;
     }
 
+    /**
+     * Setup producer to start fetching feeds
+     */
     @PostConstruct
     public void init(){
         final String feedUrl = config.getRssFeedUrl();
@@ -53,27 +58,40 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
         return FeedMappers.FEED_MAPPER.toDTOs(feeds);
     }
 
+    /**
+     * Process feeds after successful fetch and return processed feeds
+     * @return function to process feeds
+     */
     private Function<List<FeedDTO>, List<FeedDTO>> onSuccess(){
         return feeds -> {
             List<FeedDTO> processed = processor.process(feeds);
-            logger.info("Processed feeds '{}'", processed);
+            log.info("Processed feeds '{}'", processed);
 
             return processed;
         };
     }
 
+    /**
+     * Save processed feeds and returned saved feeds
+     * @return function to save feeds
+     */
     private Function<List<FeedDTO>, List<FeedDTO>> saveFeeds(){
         return feeds -> {
             List<FeedDTO> savedFeeds = saveAll(feeds);
-            logger.info("Saved feeds '{}'", savedFeeds);
+            log.info("Saved feeds '{}'", savedFeeds);
 
             return savedFeeds;
         };
     }
 
+    /**
+     * Handle error on unsuccessful feed fetch
+     * @return consumer to handle feeds
+     */
     private Consumer<Exception> onError(){
         return x -> {
-            logger.error(x.getMessage());
+            log.error(x.getMessage());
         };
     }
+
 }

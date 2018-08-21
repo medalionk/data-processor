@@ -1,7 +1,7 @@
 package ee.bilal.dev.dataprocessor.configurations;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ee.bilal.dev.dataprocessor.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -12,16 +12,16 @@ import java.util.Enumeration;
 /**
  * Created by bilal90 on 8/19/2018.
  */
+@Slf4j
 public class LoggerInterceptor extends HandlerInterceptorAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggerInterceptor.class);
-
     /**
      * Executed before actual handler is executed
+     * Log request info
      **/
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
-                             final Object handler) throws Exception {
-        LOGGER.info("[preHandle][{}][{}]{}", request, request.getMethod(),
+                             final Object handler) {
+        log.info("[preHandle][{}][{}]{}", request, request.getMethod(),
                 request.getRequestURI() + getParameters(request));
 
         return true;
@@ -32,8 +32,8 @@ public class LoggerInterceptor extends HandlerInterceptorAdapter {
      **/
     @Override
     public void postHandle(final HttpServletRequest request, final HttpServletResponse response,
-                           final Object handler, final ModelAndView modelAndView) throws Exception {
-        LOGGER.info("[postHandle][{}]", request);
+                           final Object handler, final ModelAndView modelAndView) {
+        log.info("[postHandle][{}]", request);
     }
 
     /**
@@ -41,14 +41,19 @@ public class LoggerInterceptor extends HandlerInterceptorAdapter {
      **/
     @Override
     public void afterCompletion(final HttpServletRequest request, final HttpServletResponse response,
-                                final Object handler, final Exception ex) throws Exception {
+                                final Object handler, final Exception ex) {
         if (ex != null){
-            LOGGER.error("Exception: {}", ex);
+            log.error("Exception: {}", ex);
         }
 
-        LOGGER.info("[afterCompletion][{}][exception: {}]", request, ex);
+        log.info("[afterCompletion][{}][exception: {}]", request, ex);
     }
 
+    /**
+     * Get parameters from request
+     * @param request servlet
+     * @return params
+     */
     private String getParameters(final HttpServletRequest request) {
         final StringBuilder posted = new StringBuilder();
         final Enumeration<?> e = request.getParameterNames();
@@ -75,25 +80,27 @@ public class LoggerInterceptor extends HandlerInterceptorAdapter {
         final String ip = request.getHeader("X-FORWARDED-FOR");
         final String ipAddr = (ip == null) ? getRemoteAddr(request) : ip;
 
-        if (!isNullOrEmpty(ipAddr)) {
+        if (!StringUtil.isNullOrEmpty(ipAddr)) {
             posted.append("&_psip=").append(ipAddr);
         }
 
         return posted.toString();
     }
 
+    /**
+     * Get remote address from servlet request
+     * @param request servlet
+     * @return remote address
+     */
     private String getRemoteAddr(final HttpServletRequest request) {
         final String ipFromHeader = request.getHeader("X-FORWARDED-FOR");
 
         if (ipFromHeader != null && ipFromHeader.length() > 0) {
-            LOGGER.debug("ip from proxy - X-FORWARDED-FOR : {}", ipFromHeader);
+            log.debug("ip from proxy - X-FORWARDED-FOR : {}", ipFromHeader);
             return ipFromHeader;
         }
 
         return request.getRemoteAddr();
     }
 
-    private boolean isNullOrEmpty(String string){
-        return string == null || (string.trim().isEmpty());
-    }
 }

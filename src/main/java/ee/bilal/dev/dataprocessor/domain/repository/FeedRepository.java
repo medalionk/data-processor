@@ -12,6 +12,10 @@ import java.util.List;
  */
 @Repository
 public interface FeedRepository extends JpaRepository<Feed, String> {
+    /**
+     * Get the last 10 feed entries
+     * @return 10 feeds
+     */
     @Query(nativeQuery = true, value = "select * from Feed s ORDER BY id desc LIMIT 10")
     List<Feed> findLast10Feeds();
 }

@@ -13,4 +13,5 @@ public final class FeedMappers {
   }
 
   public static final FeedMapper FEED_MAPPER = Mappers.getMapper(FeedMapper.class );
+
 }

@@ -4,6 +4,7 @@ import ee.bilal.dev.dataprocessor.application.dtos.DTO;
 import ee.bilal.dev.dataprocessor.application.services.GenericService;
 import ee.bilal.dev.dataprocessor.util.ResponseUtil;
 import ee.bilal.dev.dataprocessor.util.ValidationUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,25 +15,25 @@ import java.util.List;
 /**
  * Created by bilal90 on 8/19/2018.
  */
+@Slf4j
 public class BaseRestController<T extends DTO> implements Rest<T> {
+    
     protected final GenericService<T> service;
-    protected final Logger logger;
 
-    protected <U extends BaseRestController> BaseRestController(Class<U> tClass, GenericService<T> service) {
+    protected <U extends BaseRestController> BaseRestController(GenericService<T> service) {
         this.service = service;
-        this.logger = LoggerFactory.getLogger(tClass);
     }
 
     @Override
     public ResponseEntity<List<T>> getAll() {
-        logger.info("Get all entities");
+        log.info("Get all entities");
 
         return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<T> get(String id) {
-        logger.info("Get all entity with id: '{}'", id);
+        log.info("Get all entity with id: '{}'", id);
 
         ValidationUtil.validateIdentity(id);
 
@@ -41,7 +42,7 @@ public class BaseRestController<T extends DTO> implements Rest<T> {
 
     @Override
     public ResponseEntity<T> create(T entity) {
-        logger.info("Persist entity {} in db", entity);
+        log.info("Persist entity {} in db", entity);
 
         ValidationUtil.validateEntity(entity);
 
@@ -50,7 +51,7 @@ public class BaseRestController<T extends DTO> implements Rest<T> {
 
     @Override
     public ResponseEntity<T> update(T entity) {
-        logger.info("Update '{}' entity", entity);
+        log.info("Update '{}' entity", entity);
 
         ValidationUtil.validateEntity(entity);
 
@@ -61,9 +62,10 @@ public class BaseRestController<T extends DTO> implements Rest<T> {
     public ResponseEntity<Void> delete(String id) {
         ValidationUtil.validateIdentity(id);
 
-        logger.info("Delete entity with id: '{}'", id);
+        log.info("Delete entity with id: '{}'", id);
         service.delete(id);
 
         return ResponseEntity.ok().build();
     }
+    
 }

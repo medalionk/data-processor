@@ -4,6 +4,7 @@ package ee.bilal.dev.dataprocessor.application.exceptions;
  * Created by bilal90 on 8/19/2018.
  */
 public class ConfigurationException extends Exception {
+
     private static final long serialVersionUID = 1L;
 
     public ConfigurationException() {
@@ -21,4 +22,5 @@ public class ConfigurationException extends Exception {
     public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

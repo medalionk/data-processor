@@ -10,7 +10,7 @@ import java.util.List;
  * Created by bilal90 on 8/19/2018.
  */
 @Mapper(componentModel = "spring")
-public interface FeedMapper extends BaseMapper<FeedDTO, Feed> {
+public interface FeedMapper extends TMapper<FeedDTO, Feed> {
     @Mappings({
             @Mapping(target = "createdDateTime", ignore = true),
             @Mapping(target = "lastModifiedDateTime", ignore = true),

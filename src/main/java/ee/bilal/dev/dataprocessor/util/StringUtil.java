@@ -4,12 +4,13 @@ package ee.bilal.dev.dataprocessor.util;
  * Created by bilal90 on 8/19/2018.
  */
 public final class StringUtil {
+
     private StringUtil() {
         throw new AssertionError();
     }
 
     /**
-     * Validate if string property is null or empty
+     * Check if string property is null or empty
      * @param property to validate
      * @return true if null or empty
      */
@@ -81,4 +82,5 @@ public final class StringUtil {
 
         return titleCase.toString();
     }
+
 }

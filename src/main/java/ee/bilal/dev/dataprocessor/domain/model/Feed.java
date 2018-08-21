@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "feed")
 public class Feed extends AuditingEntity {
+
     @NotEmpty
     @NonNull
     @Column(name = "link", nullable = false)
@@ -37,4 +38,5 @@ public class Feed extends AuditingEntity {
     @NonNull
     @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
+
 }

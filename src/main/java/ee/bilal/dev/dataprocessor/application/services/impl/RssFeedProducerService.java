@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,24 +38,31 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
     }
 
     @Override
-    public void produce(final String feedUrl, final long delay, final Function<List<FeedDTO>,List<FeedDTO>> success,
+    public void produce(final String url, final long delay, final Function<List<FeedDTO>,List<FeedDTO>> success,
                         final Consumer<Exception> error) {
 
-        if(!UrlUtil.isValidUrl(feedUrl)){
-            throw new IllegalArgumentException(String.format("URL '%s' is not valid!!!", feedUrl));
+        if(!UrlUtil.isValidUrl(url)){
+            throw new IllegalArgumentException(String.format("URL '%s' is not valid!!!", url));
         }
 
         if(delay <= 0){
             throw new IllegalArgumentException("Delay cannot be 0 or negative value");
         }
 
-        final Runnable task = fetchRssFeedTask(feedUrl, success, error);
+        final Runnable task = fetchRssFeedTask(url, success, error);
         final long initialDelay = 1;
 
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleWithFixedDelay(task, initialDelay, delay, TimeUnit.SECONDS);
     }
 
+    /**
+     * Create a runnable task to fetch RSS Feeds
+     * @param feedUrl to fetch
+     * @param success callback on success
+     * @param error callback on error
+     * @return created task
+     */
     private Runnable fetchRssFeedTask(final String feedUrl, final Function<List<FeedDTO>,List<FeedDTO>> success,
                                       final Consumer<Exception> error){
         return () -> {
@@ -71,6 +77,13 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
         };
     }
 
+    /**
+     * Connect to feed url and fetch feeds using Rome library
+     * @param url of RSS Feed
+     * @return list of feeds
+     * @throws IOException on IO error when creating XMLReader
+     * @throws FeedException on error when fetching feeds
+     */
     private List<FeedDTO> fetchRssFeed(final String url) throws IOException, FeedException {
         try {
             final List<FeedDTO> feeds = new ArrayList<>();
@@ -116,4 +129,5 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
             throw ex;
         }
     }
+
 }

@@ -10,6 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class LogAfterReturnAspect {
+
+    /**
+     * Log function name and result on function return
+     * @param joinPoint function joint point
+     * @param result result from function
+     */
     @AfterReturning(
             value = "@annotation(ee.bilal.dev.dataprocessor.aspects.annotations.LogAfterReturn))",
             returning = "result")
@@ -18,4 +24,5 @@ public class LogAfterReturnAspect {
 
         log.info("Function '{}' returned with value {}", functionName, result);
     }
+
 }

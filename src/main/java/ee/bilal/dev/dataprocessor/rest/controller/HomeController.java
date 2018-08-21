@@ -9,8 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HomeController {
 
+    /**
+     * Redirect to Swagger Api documentations
+     * @return
+     */
     @RequestMapping("/")
     public String home() {
         return "redirect:swagger-ui.html";
     }
+
 }

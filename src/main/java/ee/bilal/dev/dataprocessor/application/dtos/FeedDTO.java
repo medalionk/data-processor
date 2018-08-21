@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor(force = true)
 public class FeedDTO implements DTO<Feed> {
+
     private Long id;
 
     @NotEmpty
@@ -50,4 +51,5 @@ public class FeedDTO implements DTO<Feed> {
     public Feed asEntity() {
         return FeedMappers.FEED_MAPPER.toEntity(this);
     }
+
 }

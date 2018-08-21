@@ -2,6 +2,7 @@ package ee.bilal.dev.dataprocessor.rest.controller;
 
 import ee.bilal.dev.dataprocessor.application.exceptions.ServiceException;
 import ee.bilal.dev.dataprocessor.util.ResponseUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,12 @@ import java.util.stream.Collectors;
  * Created by bilal90 on 8/19/2018.
  */
 @ControllerAdvice
+@Slf4j
 public class RestErrorHandler {
-    private final Logger logger;
 
     @Autowired
     public RestErrorHandler() {
-        this.logger = LoggerFactory.getLogger(RestErrorHandler.class);
+
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -47,43 +48,44 @@ public class RestErrorHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String,String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        logger.error("Invalid parameters: {}", ex.getMessage());
+        log.error("Invalid parameters: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String,String>> handleIllegalStateException(IllegalStateException ex) {
-        logger.error("Invalid state: {}", ex.getMessage());
+        log.error("Invalid state: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR, ex);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleEntityNotFoundException(EntityNotFoundException ex) {
-        logger.error("The resource was not found: {}", ex.getMessage());
+        log.error("The resource was not found: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.NOT_FOUND, ex);
     }
 
     @ExceptionHandler(MalformedURLException.class)
     public ResponseEntity<Map<String,String>> handleMalformedURLException(MalformedURLException ex) {
-        logger.error("Malformed URL: {}", ex.getMessage());
+        log.error("Malformed URL: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<Map<String,String>> handleDataAccessException(DataAccessException ex) {
-        logger.error("Data access error: {}", ex.getMessage());
+        log.error("Data access error: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR, ex);
     }
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<Map<String,String>> handleServiceException(ServiceException ex) {
-        logger.error("Service error: {}", ex.getMessage());
+        log.error("Service error: {}", ex.getMessage());
 
         return ResponseUtil.exceptionResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR, ex);
     }
+
 }

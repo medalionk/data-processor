@@ -30,6 +30,7 @@ import static ee.bilal.dev.dataprocessor.application.constants.Paths.VERSION;
 @RequestMapping(value = VERSION + FEEDS)
 @Slf4j
 public class FeedRestController {
+
     private final FeedService feedService;
 
     @Autowired
@@ -54,4 +55,5 @@ public class FeedRestController {
 
         return ResponseEntity.ok(jobReports);
     }
+
 }

@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ComponentScan
 public class WebMvcConfiguration implements WebMvcConfigurer{
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedOrigins("*");
@@ -28,4 +29,5 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
     }
+
 }

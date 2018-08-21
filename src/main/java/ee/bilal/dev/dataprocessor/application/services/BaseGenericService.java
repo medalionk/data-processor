@@ -1,11 +1,10 @@
 package ee.bilal.dev.dataprocessor.application.services;
 
 import ee.bilal.dev.dataprocessor.application.dtos.DTO;
-import ee.bilal.dev.dataprocessor.application.mappers.BaseMapper;
+import ee.bilal.dev.dataprocessor.application.mappers.TMapper;
 import ee.bilal.dev.dataprocessor.domain.model.BaseEntity;
 import ee.bilal.dev.dataprocessor.util.ValidationUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
@@ -16,21 +15,21 @@ import java.util.stream.Collectors;
 /**
  * Created by bilal90 on 8/19/2018.
  */
+@Slf4j
 public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>> implements GenericService<T> {
-    protected final Logger logger;
+
     protected final JpaRepository<U, String> repository;
-    protected final BaseMapper<T, U> mapper;
+    protected final TMapper<T, U> mapper;
 
     protected <S extends BaseGenericService>BaseGenericService(
-            Class<S> tClass, JpaRepository<U, String> repository, BaseMapper<T, U> mapper) {
-        this.logger = LoggerFactory.getLogger(tClass);
+            JpaRepository<U, String> repository, TMapper<T, U> mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
     public T create(T entity) {
-        logger.info("Create entity: '{}'", entity);
+        log.info("Create entity: '{}'", entity);
 
         ValidationUtil.validateEntity(entity);
         U savedEntity = repository.saveAndFlush(entity.asEntity());
@@ -40,7 +39,7 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
     @Override
     public Optional<T> update(T entity){
-        logger.info("Update entity: '{}'", entity);
+        log.info("Update entity: '{}'", entity);
 
         ValidationUtil.validateEntity(entity);
 
@@ -50,7 +49,7 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
     @Override
     public Optional<T> findOne(String id) {
-        logger.info("Fetch one entity with id: '{}'", id);
+        log.info("Fetch one entity with id: '{}'", id);
 
         ValidationUtil.validateIdentity(id);
         U entity = repository.getOne(id);
@@ -60,11 +59,11 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
     @Override
     public List<T> findAll(){
-        logger.info("Fetch all entities found");
+        log.info("Fetch all entities found");
 
         List<U> results = repository.findAll();
         if(results.isEmpty()) {
-            logger.info("No entities found");
+            log.info("No entities found");
             return new ArrayList<>();
         }
 
@@ -73,7 +72,7 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
     @Override
     public void delete(String id){
-        logger.info("Delete entity with id: '{}'", id);
+        log.info("Delete entity with id: '{}'", id);
 
         ValidationUtil.validateIdentity(id);
 
@@ -91,6 +90,7 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
     @Override
     public List<T> saveAll(List<T> dtos) {
+        log.info("Save all entities: '{}'", dtos);
         ValidationUtil.validateEntity(dtos);
 
         List<U> entities = dtos.stream().map(DTO::asEntity).collect(Collectors.toList());
@@ -98,4 +98,5 @@ public abstract class BaseGenericService<U extends BaseEntity, T extends DTO<U>>
 
         return mapper.toDTOs(savedEntities);
     }
+
 }

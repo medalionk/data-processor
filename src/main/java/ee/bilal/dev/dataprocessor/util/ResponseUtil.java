@@ -14,6 +14,7 @@ import java.util.Optional;
  * Created by bilal90 on 8/19/2018.
  */
 public final class ResponseUtil {
+
     private ResponseUtil() {
         throw new AssertionError();
     }
@@ -67,4 +68,5 @@ public final class ResponseUtil {
 
         return String.valueOf(time);
     }
+
 }
