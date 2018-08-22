@@ -1,4 +1,4 @@
-package ee.bilal.dev.dataprocessor.rest.controller.feeds;
+package ee.bilal.dev.dataprocessor.rest.controller.feed;
 
 import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.services.FeedService;
@@ -34,7 +34,7 @@ public class FeedRestController {
     private final FeedService feedService;
 
     @Autowired
-    public FeedRestController(FeedService feedService) {
+    public FeedRestController(FeedService feedService)   {
         this.feedService = feedService;
     }
 
@@ -48,7 +48,7 @@ public class FeedRestController {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public ResponseEntity<List<FeedDTO>> getAll() {
+    public ResponseEntity<List<FeedDTO>> fetchFeeds() {
         log.info("Get last 10 feed entries...");
 
         List<FeedDTO> jobReports = feedService.getFeeds();

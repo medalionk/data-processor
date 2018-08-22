@@ -10,6 +10,7 @@ import ee.bilal.dev.dataprocessor.application.dtos.FeedDTO;
 import ee.bilal.dev.dataprocessor.application.services.ProducerService;
 import ee.bilal.dev.dataprocessor.util.DateUtil;
 import ee.bilal.dev.dataprocessor.util.UrlUtil;
+import ee.bilal.dev.dataprocessor.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,9 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
     public void produce(final String url, final long delay, final Function<List<FeedDTO>,List<FeedDTO>> success,
                         final Consumer<Exception> error) {
 
+        ValidationUtil.validatePropertyNotNull(success, "Success callback");
+        ValidationUtil.validatePropertyNotNull(error, "Error callback");
+
         if(!UrlUtil.isValidUrl(url)){
             throw new IllegalArgumentException(String.format("URL '%s' is not valid!!!", url));
         }
@@ -71,30 +75,30 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
                 success.apply(feeds);
             }
             catch (Exception ex) {
-                log.error("Error getting feeds '{}'", ex);
+                log.error("Error getting feed '{}'", ex);
                 error.accept(ex);
             }
         };
     }
 
     /**
-     * Connect to feed url and fetch feeds using Rome library
+     * Connect to feed url and fetch feed using Rome library
      * @param url of RSS Feed
-     * @return list of feeds
+     * @return list of feed
      * @throws IOException on IO error when creating XMLReader
-     * @throws FeedException on error when fetching feeds
+     * @throws FeedException on error when fetching feed
      */
     private List<FeedDTO> fetchRssFeed(final String url) throws IOException, FeedException {
         try {
             final List<FeedDTO> feeds = new ArrayList<>();
 
-            log.info("Get RSS feeds from url '{}'", url);
+            log.info("Get RSS feed from url '{}'", url);
             URL feedUrl = new URL(url);
 
             final SyndFeedInput input = new SyndFeedInput();
             final SyndFeed syndFeed = input.build(new XmlReader(feedUrl));
             final List<SyndEntry> entries = syndFeed.getEntries();
-            log.info("'{}' RSS feeds found", entries.size());
+            log.info("'{}' RSS feed found", entries.size());
 
             for (SyndEntry entry : entries) {
                 final String link = entry.getLink();
@@ -122,7 +126,7 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
             log.error("Malformed url '{}'", ex);
             throw ex;
         } catch (FeedException ex) {
-            log.error("Error fetching feeds '{}'", ex);
+            log.error("Error fetching feed '{}'", ex);
             throw ex;
         } catch (IOException ex) {
             log.error("IO error '{}'", ex);

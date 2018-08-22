@@ -10,7 +10,7 @@ import java.util.List;
 public interface FeedService extends GenericService<FeedDTO>{
     /**
      * Fetch last 10 feed entries
-     * @return 10 feeds
+     * @return 10 feed
      */
     List<FeedDTO> getFeeds();
 }

@@ -42,7 +42,7 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
     }
 
     /**
-     * Setup producer to start fetching feeds
+     * Setup producer to start fetching feed
      */
     @PostConstruct
     public void init(){
@@ -59,26 +59,26 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
     }
 
     /**
-     * Process feeds after successful fetch and return processed feeds
-     * @return function to process feeds
+     * Process feed after successful fetch and return processed feed
+     * @return function to process feed
      */
     private Function<List<FeedDTO>, List<FeedDTO>> onSuccess(){
         return feeds -> {
             List<FeedDTO> processed = processor.process(feeds);
-            log.info("Processed feeds '{}'", processed);
+            log.info("Processed feed '{}'", processed);
 
             return processed;
         };
     }
 
     /**
-     * Save processed feeds and returned saved feeds
-     * @return function to save feeds
+     * Save processed feed and returned saved feed
+     * @return function to save feed
      */
     private Function<List<FeedDTO>, List<FeedDTO>> saveFeeds(){
         return feeds -> {
             List<FeedDTO> savedFeeds = saveAll(feeds);
-            log.info("Saved feeds '{}'", savedFeeds);
+            log.info("Saved feed '{}'", savedFeeds);
 
             return savedFeeds;
         };
@@ -86,7 +86,7 @@ public class RssFeedService extends BaseGenericService<Feed, FeedDTO> implements
 
     /**
      * Handle error on unsuccessful feed fetch
-     * @return consumer to handle feeds
+     * @return consumer to handle feed
      */
     private Consumer<Exception> onError(){
         return x -> {
