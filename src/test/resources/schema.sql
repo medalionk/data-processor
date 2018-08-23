@@ -7,7 +7,7 @@ CREATE TABLE feed (
   contents varchar(255) DEFAULT NULL,
   date_time datetime NOT NULL,
   description varchar(255) DEFAULT NULL,
-  link varchar(255) NOT NULL,
+  link varchar(255) NOT NULL UNIQUE,
   title varchar(255) NOT NULL,
   PRIMARY KEY (id)
 )DEFAULT CHARSET=utf8;

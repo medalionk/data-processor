@@ -1,6 +1,7 @@
 package ee.bilal.dev.dataprocessor.domain.model;
 
 import lombok.*;
+import org.hibernate.annotations.SQLInsert;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,11 +18,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(staticName = "of")
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "feed")
+@SQLInsert(sql="INSERT INTO feed (created_date_time, last_modified_date_time, contents, date_time, description, link, title) " +
+        "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+        "ON DUPLICATE KEY UPDATE link = link " )
 public class Feed extends AuditingEntity {
 
     @NotEmpty
     @NonNull
-    @Column(name = "link", nullable = false)
+    @Column(name = "link", nullable = false, unique = true)
     private String link;
 
     @NotEmpty
