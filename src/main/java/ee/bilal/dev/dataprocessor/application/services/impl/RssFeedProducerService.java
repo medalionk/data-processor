@@ -15,12 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,8 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class RssFeedProducerService implements ProducerService<List<FeedDTO>, List<FeedDTO>> {
+
+    private ScheduledExecutorService executorService = null;
 
     @Autowired
     public RssFeedProducerService() {
@@ -56,8 +60,37 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
         final Runnable task = fetchRssFeedTask(url, success, error);
         final long initialDelay = 1;
 
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleWithFixedDelay(task, initialDelay, delay, TimeUnit.SECONDS);
+        try {
+            executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.scheduleWithFixedDelay(task, initialDelay, delay, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            log.error("Error running ExecutorService '{}'", ex);
+        }
+    }
+
+    /**
+     *
+     * @param service ExecutorService
+     * @param timeout in seconds
+     */
+    private void shutdownAndAwaitTermination(ExecutorService service, int timeout) {
+        ValidationUtil.validatePropertyNotNull(service, "ExecutorService");
+
+        service.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!service.awaitTermination(timeout, TimeUnit.SECONDS)) {
+                service.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!service.awaitTermination(timeout, TimeUnit.SECONDS))
+                    log.info("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            service.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -134,4 +167,11 @@ public class RssFeedProducerService implements ProducerService<List<FeedDTO>, Li
         }
     }
 
+    @PreDestroy
+    public void destroy() {
+        log.info("Shutting down ExecutorService");
+
+        final int shutdownTimeout = 30;
+        shutdownAndAwaitTermination(executorService, shutdownTimeout);
+    }
 }
